@@ -1,8 +1,6 @@
-use core::panic;
-
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::UnorderedMap;
-use near_sdk::{env, near_bindgen, AccountId, Promise};
+use near_sdk::{env, log, near_bindgen, require, AccountId, Promise};
+use std::collections::HashMap;
 
 // 50Ⓝ in yoctoNEAR
 const MAX_WITHRAW_AMOUNT: u128 = 50_000_000_000_000_000_000_000_000;
@@ -13,14 +11,14 @@ const BLOCK_GAP_LIMITER: u64 = 27690;
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Contract {
     top_donators: Vec<(AccountId, u128)>,
-    recent_receivers: UnorderedMap<AccountId, u64>,
+    recent_receivers: HashMap<AccountId, u64>,
 }
 
 impl Default for Contract {
     fn default() -> Self {
         Self {
             top_donators: Vec::new(),
-            recent_receivers: UnorderedMap::new(b"r".to_vec()),
+            recent_receivers: HashMap::new(),
         }
     }
 }
@@ -36,33 +34,33 @@ impl Contract {
         self.top_donators.clone()
     }
 
-    pub fn request_funds(&mut self, receiver: AccountId, amount: u128) {
+    pub fn request_funds(&mut self, receiver: AccountId, amount: u128) -> Promise {
         // convert to yoctoNear
         let amount = amount * 10u128.pow(24);
         let current_block_height = env::block_height();
+        // purge expired restrictions
+        self.recent_receivers
+            .retain(|_, v| *v + BLOCK_GAP_LIMITER > current_block_height);
 
-        assert!(
-            amount <= MAX_WITHRAW_AMOUNT,
-            "Amount is too big, don't be greedy"
-        );
+        require!(amount <= MAX_WITHRAW_AMOUNT, "Withraw request too large!");
+
         // did the receiver get money recently ? if not insert them in the the map
         match self.recent_receivers.get(&receiver) {
             Some(previous_block_height) => {
                 // if they did receive within the last ~10 min block them
-                if &current_block_height - &previous_block_height < BLOCK_GAP_LIMITER {
-                    panic!("you have to wait for a little longer")
+                if &current_block_height - previous_block_height < BLOCK_GAP_LIMITER {
+                    env::panic_str("You have to wait for a little longer")
                 }
-                // else update the block that they made the call
-                self.update_or_insert_recent_receivers(&receiver, &current_block_height);
-                env::log_str("recent_receivers: Updated");
             }
             None => {
-                self.update_or_insert_recent_receivers(&receiver, &current_block_height);
+                self.recent_receivers
+                    .insert(receiver.clone(), current_block_height);
                 env::log_str("recent_receivers: Insert New");
             }
         }
+        log!("Attemping to transfer {} to {}", amount, receiver);
 
-        Promise::new(receiver).transfer(amount);
+        Promise::new(receiver.clone()).transfer(amount)
     }
 
     // donate to the faucet contract to get in the list of fame
@@ -83,16 +81,6 @@ impl Contract {
         self.top_donators.truncate(10);
 
         env::state_write(self); // <- what/why?
-    }
-
-    #[private]
-    fn update_or_insert_recent_receivers(
-        &mut self,
-        receiver: &AccountId,
-        current_block_height: &u64,
-    ) {
-        self.recent_receivers
-            .insert(&receiver, &current_block_height);
     }
 }
 
