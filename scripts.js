@@ -68,7 +68,7 @@ function faucet() {
         } catch {
             this.failure = {
                 status: true,
-                message: ''
+                message: 'Sorry! You have to wait a little longer!'
             }
         }
 
