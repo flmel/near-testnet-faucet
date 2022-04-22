@@ -8,25 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.8.1/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
-    <style>
-        body {
-            font-family: 'Manrope', sans-serif;
-        }
-
-        .grad {
-            background-color: #FAACA8;
-            background-image: linear-gradient(19deg, #FAACA8 0%, #DDD6F3 80%);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 
 <body>
     <div>
-        <div class="h-screen flex mx-auto grad">
+        <div class="h-screen flex gradient">
             <!-- left -->
-            <div class="px-10 w-1/2 flex flex-col justify-center items-end">
+            <div class="hidden md:flex px-10 w-1/2 flex-col justify-center items-end">
                 <div class="w-2/3 text-right">
                     <div class="flex justify-end">
                         <a href="https://near.org/">
@@ -56,18 +46,24 @@
             </div>
 
             <!-- right -->
-            <div class="bg-gray-100 flex flex-col justify-center pl-20 pr-36 w-1/2">
+            <div class="bg-gray-100 flex flex-col  md:justify-center px-6 md:px-20  md:w-1/2 h-screen ">
+                <div class="md:hidden mb-8 mt-10">
+                    <a href="https://near.org/">
+                        <img src="./assets/near_logo_black.svg" alt="" class="h-16">
+                    </a>
+
+                </div>
                 <div class="">
                     <!-- nonoficial -->
                     <div>
                         <div>
-                            <span class="text-6xl">nonofficial</span>
+                            <span class="text-2xl md:text-6xl">nonofficial</span>
                         </div>
                         <div>
-                            <span class="bg-gray-800 text-gray-100  px-1 text-4xl">testnet</span>
+                            <span class="bg-gray-800 text-gray-100 px-1 text-xl md:text-4xl">testnet</span>
                         </div>
                         <div>
-                            <span class="text-6xl">faucet</span>
+                            <span class="text-2xl md:text-6xl">faucet</span>
                         </div>
                     </div>
 
@@ -88,7 +84,7 @@
                             </button>
                         </div>
 
-                        <div x-data="faucet" x-show="signed" class="flex justify-between">
+                        <div x-data="faucet" x-show="signed" class="xs:flex-col md:flex md:justify-between">
                             <div class="flex-col">
                                 <!-- form -->
                                 <form @submit.prevent="requestFunds" class="flex">
@@ -134,7 +130,7 @@
                 </div>
                 <!-- footer -->
                 <div class="border-t-4 border-gray-900 mt-4 ">
-                    <ul class="flex space-x-2 mt-1">
+                    <ul class="lg:flex lg:space-x-2 mt-1">
                         <li><a href="https://near.org/" class="hover:underline">Near</a></li>
                         <li><a href="https://near.university" class="hover:underline">Near University</a></li>
                         <li><a href="https://near.chat" class="hover:underline">Discord</a></li>
