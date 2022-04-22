@@ -58,7 +58,7 @@ function faucet() {
         try {
             await contract.request_funds({
                 receiver,
-                amount: 1
+                amount: 100
             })
             this.success = {
                 status: true,
