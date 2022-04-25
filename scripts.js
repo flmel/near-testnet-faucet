@@ -70,6 +70,7 @@ function faucet() {
                 status: true,
                 message: 'Sorry! You have to wait a little longer!'
             }
+            this.loading = false;
         }
 
     }
