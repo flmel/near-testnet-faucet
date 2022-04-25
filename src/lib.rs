@@ -33,6 +33,8 @@ impl Contract {
     }
 
     pub fn request_funds(&mut self, receiver: AccountId, amount: u128) -> Promise {
+        // convert amount to yoctoNEAR
+        let amount = amount * 10u128.pow(24);
         let current_block_height = env::block_height();
         // purge expired restrictions
         self.recent_receivers
