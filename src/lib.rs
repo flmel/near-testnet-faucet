@@ -83,3 +83,5 @@ impl Contract {
         env::state_write(self);
     }
 }
+// TESTING
+mod tests;
