@@ -9,7 +9,7 @@ const near = new nearApi.Near({
 const wallet = new nearApi.WalletConnection(near)
 
 // connect to a NEAR smart contract
-const contract = new nearApi.Contract(wallet.account(), 'faucet.flmel.testnet', {
+const contract = new nearApi.Contract(wallet.account(), 'v1.faucet.nonofficial.testnet', {
     viewMethods: ['get_top_contributors'],
     changeMethods: ['request_funds', 'contribute']
 })
@@ -32,7 +32,7 @@ function auth() {
     const accountId = wallet.getAccountId()
     function sign_in() {
         wallet.requestSignIn(
-            'faucet.flmel.testnet',
+            'v1.faucet.nonofficial.testnet',
             'Testnet Faucet v1'
         )
     }
@@ -58,7 +58,7 @@ function faucet() {
         try {
             await contract.request_funds({
                 receiver,
-                amount: 100
+                amount: nearApi.utils.format.parseNearAmount((100).toString())
             })
             this.success = {
                 status: true,
