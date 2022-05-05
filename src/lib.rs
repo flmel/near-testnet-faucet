@@ -1,16 +1,17 @@
-// cSpell:ignore borsh yocto bindgen usdn fengye
 use near_sdk::{
     borsh::{self, BorshDeserialize, BorshSerialize},
-    collections::{LookupSet, UnorderedMap, Vector},
-    env, log, near_bindgen, require, AccountId, Promise, ONE_NEAR,
+    collections::LookupSet,
+    env,
+    json_types::U128,
+    near_bindgen, require, AccountId, Promise, ONE_NEAR,
 };
 
 use std::collections::HashMap;
 
 // 100Ⓝ in yoctoNEAR
 const MAX_WITHDRAW_AMOUNT: u128 = 100 * ONE_NEAR;
-// 60min in ms
-const REQUEST_GAP_LIMITER: u64 = 3600000;
+// 30min in ms
+const REQUEST_GAP_LIMITER: u64 = 1800000;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -32,28 +33,30 @@ impl Default for Contract {
 
 #[near_bindgen]
 impl Contract {
-    pub fn request_funds(&mut self, receiver_id: AccountId) -> Promise {
-        // check if signer is in the blacklist
-        assert!(
-            self.blacklist.contains(&env::signer_account_id()),
-            "You have been blacklisted!"
+    pub fn request_funds(&mut self, receiver_id: AccountId, amount: U128) -> Promise {
+        // check if predecessor is in the blacklist
+        require!(
+            self.blacklist.contains(&env::predecessor_account_id()) == false,
+            "Account has been blacklisted!"
         );
-        // check if receiver_id is in the blacklist
-        assert!(
-            self.blacklist.contains(&receiver_id),
-            "You have been blacklisted!"
+        require!(
+            amount.0 <= MAX_WITHDRAW_AMOUNT,
+            "Withdraw request too large!"
         );
-
+        // TODO: Remove hardcoded bad actor
+        if receiver_id.to_string().contains("fengye") {
+            env::panic_str("Account has been blacklisted!");
+        }
         let current_timestamp_ms: u64 = env::block_timestamp_ms();
 
         // purge expired restrictions
         self.recent_receivers
             .retain(|_, v: &mut u64| *v + REQUEST_GAP_LIMITER > current_timestamp_ms);
 
-        // did the receiver get money recently ? if not insert them in the the map
+        // did the receiver get money recently? if not insert them in the the map
         match self.recent_receivers.get(&receiver_id) {
             Some(previous_timestamp_ms) => {
-                // if they did receive within the last ~5 min block them
+                // if they did receive within the last ~30 min block them
                 if &current_timestamp_ms - previous_timestamp_ms < REQUEST_GAP_LIMITER {
                     env::panic_str(
                         "You have to wait for a little longer before requesting to this account!",
@@ -65,8 +68,8 @@ impl Contract {
                     .insert(receiver_id.clone(), current_timestamp_ms);
             }
         }
-
-        Promise::new(receiver_id.clone()).transfer(MAX_WITHDRAW_AMOUNT)
+        // make the transfer
+        Promise::new(receiver_id.clone()).transfer(amount.0)
     }
 
     #[private]
@@ -75,7 +78,7 @@ impl Contract {
     }
 
     #[private]
-    pub fn remove_to_blacklist(&mut self, account_id: AccountId) {
+    pub fn remove_from_blacklist(&mut self, account_id: AccountId) {
         self.blacklist.remove(&account_id);
     }
 
