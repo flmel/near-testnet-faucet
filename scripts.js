@@ -54,10 +54,10 @@ function auth() {
 function faucet() {
     async function requestFunds() {
         this.loading = true;
-        const receiver = this.receiver_id
+        const receiver_id = this.receiver_id
         try {
             await contract.request_funds({
-                receiver,
+                receiver_id,
                 amount: nearApi.utils.format.parseNearAmount((100).toString())
             })
             this.success = {
