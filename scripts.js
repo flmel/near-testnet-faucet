@@ -62,10 +62,11 @@ function faucet() {
             })
             this.success = {
                 status: true,
-                message: `Success! You have sent 100Ⓝ to ${receiver}!`
+                message: `Success! You have sent 100Ⓝ to ${receiver_id}!`
             }
             this.loading = false;
-        } catch {
+        } catch (err) {
+            console.error(err)
             this.failure = {
                 status: true,
                 message: 'Sorry! You have to wait a little longer!'
