@@ -13,29 +13,20 @@ In order to compile and run everything you will need:
 * Rust and WASM toolchain [detailed steps here](https://www.near-sdk.io/)
 
 
-### Installation
-
-A step by step guide that will tell you how to get the development environment up and running.
-
-```
-$ First step
-$ Another step
-$ Final step
-```
-
-## Usage
-
-A few examples of useful commands and/or tasks.
-
-```
-$ First example
-$ Second example
-$ And keep this in mind
-```
-
-## Deployment
+## Deployment and Usage
 
 Additional notes on how to deploy this on a live or release system. Explaining the most important branches, what pipelines they trigger and how to update the database (if anything special).
+
+### Further development and research/exploration
+
+- [ ] Add [workspaces-rs](https://github.com/near/workspaces-rs/) integration tests. (currently blocked by: [#110](https://github.com/near/workspaces-rs/issues/110))
+- [ ] Improve defensive mechanics
+- [ ] Move the frontend to [Yew](https://yew.rs/)
+- [ ] Stake percentage of the vault/account balance with a testnet validator  
+- [ ] Add ability to request USN (either trough XCC to usdn.testnet or via contract ballance support)
+- [ ] Explore the idea to support other FTs
+    - maybe airdrop mechanics(via collaborative effort) to some kind of Dev FT/NFT holders
+
 
 ### Useful Links
 
@@ -44,7 +35,3 @@ Additional notes on how to deploy this on a live or release system. Explaining t
 * [Near Docs](https://docs.near.org)
 * [Near SDK-RS Docs](https://near-sdk.io)
 * [Testnet Blockchain Explorer](https://explorer.testnet.near.org/)
-
-### Mid-Long term goals
-
-[Yew](https://yew.rs/)
