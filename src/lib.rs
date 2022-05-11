@@ -82,6 +82,12 @@ impl Contract {
         self.blacklist.remove(&account_id);
     }
 
+    // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
+    pub fn clear_recent_receivers(&mut self) {
+        assert_self();
+        self.recent_receivers.clear();
+    }
+
     // contribute to the faucet contract to get in the list of fame
     #[payable]
     pub fn contribute(&mut self) {
