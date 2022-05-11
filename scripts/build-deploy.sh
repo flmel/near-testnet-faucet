@@ -5,7 +5,7 @@
 ############
 # build the contract
 echo -e "-------------------------\nCargo Build - START\n-------------------------"
-cargo build --target wasm32-unknown-unknown --release
+RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release
 echo -e "-------------------------\nCargo Build - FINISHED\n-------------------------"
 echo -e "-------------------------\nDEV-DEPLOY - START\n-------------------------"
 # TODO: FIX make sure the output fom dev-deploy is not lost 

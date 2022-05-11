@@ -1,4 +1,5 @@
 use near_sdk::{
+    assert_self,
     borsh::{self, BorshDeserialize, BorshSerialize},
     collections::LookupSet,
     env,
@@ -43,10 +44,7 @@ impl Contract {
             amount.0 <= MAX_WITHDRAW_AMOUNT,
             "Withdraw request too large!"
         );
-        // TODO: Remove hardcoded bad actor
-        if receiver_id.to_string().contains("fengye") {
-            env::panic_str("Account has been blacklisted!");
-        }
+
         let current_timestamp_ms: u64 = env::block_timestamp_ms();
 
         // purge expired restrictions
@@ -72,20 +70,22 @@ impl Contract {
         Promise::new(receiver_id.clone()).transfer(amount.0)
     }
 
-    #[private]
+    // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
     pub fn add_to_blacklist(&mut self, account_id: AccountId) {
+        assert_self();
         self.blacklist.insert(&account_id);
     }
 
-    #[private]
+    // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
     pub fn remove_from_blacklist(&mut self, account_id: AccountId) {
+        assert_self();
         self.blacklist.remove(&account_id);
     }
 
     // contribute to the faucet contract to get in the list of fame
     #[payable]
     pub fn contribute(&mut self) {
-        let donator = env::signer_account_id();
+        let donator = env::predecessor_account_id();
         let amount = env::attached_deposit();
 
         match self
