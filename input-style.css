@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    font-family: 'Manrope', sans-serif;
+    font-family: -apple-system, 'Manrope', sans-serif;
 }
 
 .gradient {
