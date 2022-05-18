@@ -8,20 +8,17 @@ use near_sdk::{
 };
 
 use std::collections::HashMap;
+
 const TGAS: u64 = 1_000_000_000_000;
+// settings
 const MAX_WITHDRAW_AMOUNT: Balance = 100 * ONE_NEAR;
 const REQUEST_GAP_LIMITER: u64 = 1800000;
 const VAULT_ID: &str = "vault.nonofficial.testnet";
-const MIN_BALANCE_THRESHOLD: Balance = 100 * ONE_NEAR;
+const MIN_BALANCE_THRESHOLD: Balance = 5000 * ONE_NEAR;
 
 #[ext_contract(vault_contract)]
 trait VaultContract {
     fn request_funds(&mut self);
-}
-
-#[ext_contract(faucet_contract)]
-trait Callbacks {
-    fn request_additional_liquidity(&self);
 }
 
 #[near_bindgen]
@@ -77,14 +74,11 @@ impl Contract {
             }
         }
         // make the transfer
-        Promise::new(receiver_id.clone()).transfer(amount.0).then(
-            faucet_contract::request_additional_liquidity(
-                env::current_account_id(),
-                0,
-                Gas::from(300000000000000),
-            ),
-        );
-        env::log_str("request fund finished");
+        Promise::new(receiver_id.clone()).transfer(amount.0);
+        // check if additional liquidity is needed
+        if env::account_balance() < MIN_BALANCE_THRESHOLD {
+            self.request_additional_liquidity();
+        }
     }
 
     // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
@@ -133,12 +127,9 @@ impl Contract {
             .collect()
     }
 
-    #[private]
-    pub fn request_additional_liquidity(&self) {
-        env::log_str("Callback called");
-        if env::account_balance() < MIN_BALANCE_THRESHOLD {
-            vault_contract::request_funds(VAULT_ID.parse().unwrap(), 0, Gas(300_000_000_000_000));
-        }
+    // request_additional_liquidity
+    fn request_additional_liquidity(&self) {
+        vault_contract::request_funds(VAULT_ID.parse().unwrap(), 0, Gas(5 * TGAS));
     }
 }
 #[cfg(test)]
