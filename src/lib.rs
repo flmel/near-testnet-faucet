@@ -2,22 +2,29 @@ use near_sdk::{
     assert_self,
     borsh::{self, BorshDeserialize, BorshSerialize},
     collections::LookupSet,
-    env,
+    env, ext_contract,
     json_types::U128,
-    near_bindgen, require, AccountId, Promise, ONE_NEAR,
+    near_bindgen, require, AccountId, Balance, Gas, Promise, ONE_NEAR,
 };
 
 use std::collections::HashMap;
 
-// 100Ⓝ in yoctoNEAR
-const MAX_WITHDRAW_AMOUNT: u128 = 100 * ONE_NEAR;
-// 30min in ms
+const TGAS: u64 = 1_000_000_000_000;
+// settings
+const MAX_WITHDRAW_AMOUNT: Balance = 100 * ONE_NEAR;
 const REQUEST_GAP_LIMITER: u64 = 1800000;
+const VAULT_ID: &str = "vault.nonofficial.testnet";
+const MIN_BALANCE_THRESHOLD: Balance = 5000 * ONE_NEAR;
+
+#[ext_contract(vault_contract)]
+trait VaultContract {
+    fn request_funds(&mut self);
+}
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Contract {
-    top_contributors: Vec<(AccountId, u128)>,
+    top_contributors: Vec<(AccountId, Balance)>,
     recent_receivers: HashMap<AccountId, u64>,
     blacklist: LookupSet<AccountId>,
 }
@@ -34,7 +41,7 @@ impl Default for Contract {
 
 #[near_bindgen]
 impl Contract {
-    pub fn request_funds(&mut self, receiver_id: AccountId, amount: U128) -> Promise {
+    pub fn request_funds(&mut self, receiver_id: AccountId, amount: U128) {
         // check if predecessor is in the blacklist
         require!(
             self.blacklist.contains(&env::predecessor_account_id()) == false,
@@ -67,7 +74,11 @@ impl Contract {
             }
         }
         // make the transfer
-        Promise::new(receiver_id.clone()).transfer(amount.0)
+        Promise::new(receiver_id.clone()).transfer(amount.0);
+        // check if additional liquidity is needed
+        if env::account_balance() < MIN_BALANCE_THRESHOLD {
+            self.request_additional_liquidity();
+        }
     }
 
     // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
@@ -91,8 +102,8 @@ impl Contract {
     // contribute to the faucet contract to get in the list of fame
     #[payable]
     pub fn contribute(&mut self) {
-        let donator = env::predecessor_account_id();
-        let amount = env::attached_deposit();
+        let donator: AccountId = env::predecessor_account_id();
+        let amount: Balance = env::attached_deposit();
 
         match self
             .top_contributors
@@ -114,6 +125,11 @@ impl Contract {
             .iter()
             .map(|(account_id, amount)| (account_id.clone(), amount.to_string()))
             .collect()
+    }
+
+    // request_additional_liquidity
+    fn request_additional_liquidity(&self) {
+        vault_contract::request_funds(VAULT_ID.parse().unwrap(), 0, Gas(5 * TGAS));
     }
 }
 #[cfg(test)]

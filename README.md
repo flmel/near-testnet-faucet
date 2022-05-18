@@ -1,9 +1,6 @@
 # Near Testnet Faucet - WIP
 
-__This project **is currently a work in progress**__
-
-
-Near Testnet Faucet is my project submission for for NCD held by [Near University](https://www.near.university). It consists of a Smart Contract witten in Rust, couple of bash scripts to interact with it and a [TailwindCSS](https://tailwindcss.com/) and [AlpineJs](https://alpinejs.dev/) frontend, currently deployed at https://near-faucet.io. It aims to help developers coming from other blockchains who are used to the concept of *Faucets* and people who for some reason are in need of _Testnet_ Near.
+Near Testnet Faucet is my project submission for NCD held at [Near University](https://www.near.university). It consists of a Smart Contract witten in Rust, couple of bash scripts to interact with it and a [TailwindCSS](https://tailwindcss.com/) and [AlpineJs](https://alpinejs.dev/) frontend, currently deployed at https://near-faucet.io. It aims to help developers coming from other blockchains who are used to the concept of *Faucets* and people who for some reason are in need of _Testnet_ Near.
 
 
 ### Prerequisites
@@ -15,8 +12,17 @@ In order to compile and run everything you will need:
 
 
 ## Deployment and Usage
-
-Additional notes on how to deploy this on a live or release system. Explaining the most important branches, what pipelines they trigger and how to update the database (if anything special).
+Before building and deploying you should change to these contract settings (found in lib.rs) with the following snippet
+```rust
+// sets the maximum amount an user can request to 10 near
+const MAX_WITHDRAW_AMOUNT: Balance = 10 * ONE_NEAR;
+// sets the the time (in ms) that user shall wait before subsequent request to 1 min
+const REQUEST_GAP_LIMITER: u64 = 60000;
+// sets the vault contract (you cna leave that if you don't plan to deploy the one found int the vault branch)
+const VAULT_ID: &str = "vault.nonofficial.testnet";
+// sets the balance threshold required to make a call to the vault contract for additional liquidity
+const MIN_BALANCE_THRESHOLD: Balance = 10 * ONE_NEAR;
+```
 
 build:  
 `RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release`
