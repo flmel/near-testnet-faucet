@@ -7,7 +7,8 @@ use near_sdk::{
 
 // 24h in ms
 const REQUEST_COOLDOWN_MS: u64 = 86400000;
-const AMOUNT_TO_BE_SENT: u128 = 10 * ONE_NEAR;
+// because why always round numbers
+const AMOUNT_TO_BE_SENT: u128 = 7349 * ONE_NEAR;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -44,35 +45,13 @@ impl Contract {
         self.last_call = env::block_timestamp_ms();
     }
 
-    // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
     pub fn add_to_whitelist(&mut self, account_id: AccountId) {
         assert_self();
         self.whitelist.insert(&account_id);
     }
 
-    // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
     pub fn remove_from_whitelist(&mut self, account_id: AccountId) {
         assert_self();
         self.whitelist.remove(&account_id);
     }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::Contract;
-    use near_sdk::test_utils::{accounts, VMContextBuilder};
-    use near_sdk::{env, testing_env, ONE_NEAR};
-
-    fn get_context(is_view: bool) -> VMContextBuilder {
-        let mut builder = VMContextBuilder::new();
-        builder
-            .is_view(is_view)
-            .current_account_id("contract.testnet".parse().unwrap());
-        builder
-    }
-
-    #[test]
-    #[test]
-    #[should_panic]
-    fn test_panics_request_funds() {}
 }
