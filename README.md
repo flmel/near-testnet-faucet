@@ -2,9 +2,6 @@
 
 Near Testnet Faucet is my project submission for NCD held at [Near University](https://www.near.university). It consists of a Smart Contract witten in Rust, couple of bash scripts to interact with it and a [TailwindCSS](https://tailwindcss.com/) and [AlpineJs](https://alpinejs.dev/) frontend, currently deployed at https://near-faucet.io. It aims to help developers coming from other blockchains who are used to the concept of *Faucets* and people who for some reason are in need of _Testnet_ Near.
 
-Cringy loom video [can be seen here](https://www.loom.com/share/f717dfa6abd347bdbf551ec906dc2d63)
-
-
 ### Prerequisites
 
 In order to compile and run everything you will need:
