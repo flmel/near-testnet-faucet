@@ -2,6 +2,8 @@
 
 Near Testnet Faucet is my project submission for NCD held at [Near University](https://www.near.university). It consists of a Smart Contract witten in Rust, couple of bash scripts to interact with it and a [TailwindCSS](https://tailwindcss.com/) and [AlpineJs](https://alpinejs.dev/) frontend, currently deployed at https://near-faucet.io. It aims to help developers coming from other blockchains who are used to the concept of *Faucets* and people who for some reason are in need of _Testnet_ Near.
 
+Cringy loom video [can be seen here](https://www.loom.com/share/f717dfa6abd347bdbf551ec906dc2d63)
+
 
 ### Prerequisites
 
@@ -24,10 +26,18 @@ const VAULT_ID: &str = "vault.nonofficial.testnet";
 const MIN_BALANCE_THRESHOLD: Balance = 10 * ONE_NEAR;
 ```
 
-build:  
+If you want to test/experiment without using the vault contract you should omit the `env::account_balance()` check at the end of the `request_funds` fn
+```rust
+78 // check if additional liquidity is needed
+79 // if env::account_balance() <MIN_BALANCE_THRESHOLD {
+80 //   self.request_additional_liquidity();
+81 //}
+```
+
+#### build:  
 `RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release`
 
-deploy:  
+#### deploy:  
 `near deploy --wasmFile PATH_TO.wasm --accountId ACCOUNT_YOU_HAVE_KEYS_FOR`
 
 Alternatively, you can make use of `near dev deploy` or the included bash script at `./scripts/build-deploy.sh`
