@@ -1,6 +1,6 @@
 # Near Testnet Faucet - WIP
 
-Near Testnet Faucet is my project submission for NCD held at [Near University](https://www.near.university). It consists of a Smart Contract witten in Rust, couple of bash scripts to interact with it and a [TailwindCSS](https://tailwindcss.com/) and [AlpineJs](https://alpinejs.dev/) frontend, currently deployed at https://near-faucet.io. It aims to help developers coming from other blockchains who are used to the concept of *Faucets* and people who for some reason are in need of _Testnet_ Near.
+Near Testnet Faucet is my project submission for NCD held at [Near University](https://www.near.university). It consists of two Smart Contracts witten in Rust and a [TailwindCSS](https://tailwindcss.com/) and [AlpineJs](https://alpinejs.dev/) frontend, currently deployed at https://near-faucet.io. It aims to help developers coming from other blockchains who are used to the concept of *Faucets* and people who for some reason are in need of _Testnet_ Near.
 
 ### Prerequisites
 
@@ -37,7 +37,7 @@ If you want to test/experiment without using the vault contract you should omit 
 #### deploy:  
 `near deploy --wasmFile PATH_TO.wasm --accountId ACCOUNT_YOU_HAVE_KEYS_FOR`
 
-Alternatively, you can make use of `near dev deploy` or the included bash script at `./scripts/build-deploy.sh`
+Alternatively, you can make use of `near dev deploy`
 
 
 #### Brief overview of the contracts functions
@@ -65,12 +65,6 @@ fn request_additional_liquidity(...) {
 // this makes XCC to an vault contract (can be found in vault branch) if the faucets account balance goes bellow certain threshold 
 }
 ```
-#### Scripts
-A set of bash scripts can be found in `./scripts` these are meant to automate and ease the interaction with the contract. I've tried to document well with comments on each line. Expected to be ran from the main directory. 
-
-NOTES: 
-- _Scripts probably wont work on Windows because in Windows we set env variables differently and we have to escape the `"` in the arguments of contract calls when interacting with the cli_  
-- _Scripts do not cover all the functionality of the contract_
 
 ## Testing
 Currently the project makes use of Rusts Unit testing (ish), Integration tests are a bit hard since the tooling is under restructuring/refactoring at the moment.    
