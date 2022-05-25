@@ -57,7 +57,7 @@ function contribute() {
         validateInput,
         inputValid: true,
         open: false,
-        contribute_amount: 200
+        contribute_amount: "200"
     }
 }
 
