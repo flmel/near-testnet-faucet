@@ -28,7 +28,7 @@
                         Sharing our unused
                         tokens could help other developers learn and experiment.</span></p>
                 <p class="mt-3 font-bold">You account currently holds:</p>
-                <p><span x-text="get_balance"></span>Ⓝ</p>
+                <p><span x-text="$store.auth.signed ? get_balance : ''"></span>Ⓝ</p>
                 <!-- contribute form -->
                 <form @submit.prevent="contributeToFaucet" class="flex flex-col mt-1">
                     <div class="relative">
