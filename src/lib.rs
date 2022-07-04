@@ -93,8 +93,10 @@ impl Contract {
         self.blacklist.remove(&account_id);
     }
 
-    pub fn fix_contribute_vec(&mut self) {
+    // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
+    pub fn clear_top_contributors(&mut self) {
         assert_self();
+        self.top_contributors.clear()
     }
 
     // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
