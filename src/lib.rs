@@ -12,7 +12,7 @@ use std::collections::HashMap;
 const TGAS: u64 = 1_000_000_000_000;
 // settings
 const MAX_WITHDRAW_AMOUNT: Balance = 100 * ONE_NEAR;
-const REQUEST_GAP_LIMITER: u64 = 1800000;
+const REQUEST_GAP_LIMITER: u64 = 7200000;
 const VAULT_ID: &str = "vault.nonofficial.testnet";
 const MIN_BALANCE_THRESHOLD: Balance = 5000 * ONE_NEAR;
 
@@ -91,6 +91,10 @@ impl Contract {
     pub fn remove_from_blacklist(&mut self, account_id: AccountId) {
         assert_self();
         self.blacklist.remove(&account_id);
+    }
+
+    pub fn fix_contribute_vec(&mut self) {
+        assert_self();
     }
 
     // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
