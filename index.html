@@ -17,7 +17,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1C2RBHN0QP"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
 
         gtag('config', 'G-1C2RBHN0QP');
@@ -70,10 +70,10 @@
                 <!-- contribution board -->
                 <div class="mt-6">
                     <div class="bg-slate-800 text-white px-2 py-1">
-                        <h3 class="font-bold uppercase">Most generous contributors</h3>
+                        <h3 class="font-bold uppercase">Most Recent Contribution</h3>
                     </div>
                     <ul x-data="contributionStats" class="flex flex-col items-end">
-                        <template x-for="c in contributorsTopList">
+                        <template x-for="c in recentContributionsList">
                             <li class="w-fit bg-gray-100 odd:bg-gray-200 px-2 py-1">
                                 <span x-text="c.accountId"></span>
                                 <span><span x-text="c.amount"></span>Ⓝ</span>

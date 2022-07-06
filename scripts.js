@@ -10,7 +10,7 @@ const wallet = new nearApi.WalletConnection(near)
 
 // connect to a NEAR smart contract
 const contract = new nearApi.Contract(wallet.account(), 'v1.faucet.nonofficial.testnet', {
-    viewMethods: ['get_top_contributors'],
+    viewMethods: ['get_recent_contributions'],
     changeMethods: ['request_funds', 'contribute']
 })
 
@@ -63,15 +63,15 @@ function contribute() {
 
 // contribution stats
 function contributionStats() {
-    async function contributorsTopList() {
-        let response = await contract.get_top_contributors()
+    async function recentContributionsList() {
+        let response = await contract.get_recent_contributions()
         return response.map(contribution => ({
             accountId: contribution[0],
             amount: nearApi.utils.format.formatNearAmount(contribution[1])
         }))
     }
 
-    return { contributorsTopList }
+    return { recentContributionsList }
 }
 
 // faucet
