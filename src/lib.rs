@@ -4,17 +4,16 @@ use near_sdk::{
     collections::LookupSet,
     env, ext_contract,
     json_types::U128,
-    near_bindgen, require, AccountId, Balance, Gas, Promise, ONE_NEAR,
+    near_bindgen, require, AccountId, Balance, Promise, ONE_NEAR,
 };
 
 use std::collections::HashMap;
 
-const TGAS: u64 = 1_000_000_000_000;
 // settings
 const MAX_WITHDRAW_AMOUNT: Balance = 10 * ONE_NEAR;
 const REQUEST_GAP_LIMITER: u64 = 3600000;
 const VAULT_ID: &str = "vault.nonofficial.testnet";
-const MIN_BALANCE_THRESHOLD: Balance = 5000 * ONE_NEAR;
+const MIN_BALANCE_THRESHOLD: Balance = 100 * ONE_NEAR;
 
 #[ext_contract(vault_contract)]
 trait VaultContract {
@@ -119,7 +118,7 @@ impl Contract {
 
     // request_additional_liquidity
     fn request_additional_liquidity(&self) {
-        vault_contract::request_funds(VAULT_ID.parse().unwrap(), 0, Gas(5 * TGAS));
+        vault_contract::ext(VAULT_ID.parse().unwrap()).request_funds();
     }
 }
 #[cfg(test)]
