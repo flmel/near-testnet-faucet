@@ -13,7 +13,7 @@ use std::collections::HashMap;
 const MAX_WITHDRAW_AMOUNT: Balance = 10 * ONE_NEAR;
 const REQUEST_GAP_LIMITER: u64 = 3600000;
 const VAULT_ID: &str = "vault.nonofficial.testnet";
-const MIN_BALANCE_THRESHOLD: Balance = 100 * ONE_NEAR;
+const MIN_BALANCE_THRESHOLD: Balance = 5000 * ONE_NEAR;
 
 #[ext_contract(vault_contract)]
 trait VaultContract {
