@@ -28,55 +28,42 @@ fn test_contribute() {
     assert_eq!(env::account_balance(), 2 * ONE_NEAR);
 }
 
-// get_top_contributors
+// get_recent_contributions
 #[test]
-fn test_get_top_contributors() {
+fn test_get_recent_contributions() {
     let mut context = get_context(false);
-    let mut contract = Contract {
-        top_contributors: vec![(accounts(0), 10), (accounts(1), 5)],
-        ..Contract::default()
-    };
-    // Using small Yocto for simplicity
+    let mut contract = Contract::default();
 
-    // alice is top contributor
+    // alice context
+    testing_env!(context
+        .predecessor_account_id(accounts(0))
+        .attached_deposit(10)
+        .build());
+    contract.contribute();
+
     assert_eq!(
         (accounts(0), "10".to_string()),
-        contract.get_top_contributors()[0]
+        contract.get_recent_contributions()[0]
     );
 
     // bobs context
     testing_env!(context
         .predecessor_account_id(accounts(1))
-        .attached_deposit(10)
-        .build());
-    contract.contribute();
-    // bob donates 10 (with initial donation of 5
-    // he updates his previous donation score and is now top donator)
-    assert_eq!(
-        (accounts(1), "15".to_string()),
-        contract.get_top_contributors()[0]
-    );
-
-    // charlies context
-    testing_env!(context
-        .predecessor_account_id(accounts(2))
         .attached_deposit(11)
         .build());
     contract.contribute();
-    // charlies donates 11 and goes on second position
+
     assert_eq!(
-        (accounts(2), "11".to_string()),
-        contract.get_top_contributors()[1]
+        (accounts(1), "11".to_string()),
+        contract.get_recent_contributions()[0]
     );
 
-    // the vec shall be sorted as vec[(bob, "15"), (charlie: "11"), (alice, "10")]
     assert_eq!(
         vec![
-            (accounts(1), "15".to_string()),
-            (accounts(2), "11".to_string()),
-            (accounts(0), "10".to_string())
+            (accounts(1), "11".to_string()),
+            (accounts(0), "10".to_string()),
         ],
-        contract.get_top_contributors()
+        contract.get_recent_contributions()
     )
 }
 

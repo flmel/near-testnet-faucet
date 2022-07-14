@@ -24,7 +24,7 @@ trait VaultContract {
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Contract {
-    top_contributors: Vec<(AccountId, Balance)>,
+    recent_contributions: Vec<(AccountId, Balance)>,
     recent_receivers: HashMap<AccountId, u64>,
     blacklist: LookupSet<AccountId>,
 }
@@ -32,7 +32,7 @@ pub struct Contract {
 impl Default for Contract {
     fn default() -> Self {
         Self {
-            top_contributors: Vec::new(),
+            recent_contributions: Vec::new(),
             recent_receivers: HashMap::new(),
             blacklist: LookupSet::new(b"s"),
         }
@@ -94,12 +94,6 @@ impl Contract {
     }
 
     // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
-    pub fn clear_top_contributors(&mut self) {
-        assert_self();
-        self.top_contributors.clear()
-    }
-
-    // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
     pub fn clear_recent_receivers(&mut self) {
         assert_self();
         self.recent_receivers.clear();
@@ -108,26 +102,16 @@ impl Contract {
     // contribute to the faucet contract to get in the list of fame
     #[payable]
     pub fn contribute(&mut self) {
-        let donator: AccountId = env::predecessor_account_id();
+        let contributor: AccountId = env::predecessor_account_id();
         let amount: Balance = env::attached_deposit();
 
-        match self
-            .top_contributors
-            .binary_search_by(|(account_id, _)| account_id.cmp(&donator))
-        {
-            Ok(index) => self.top_contributors[index].1 += amount,
-            Err(index) => self.top_contributors.insert(index, (donator, amount)),
-        }
-
-        self.top_contributors.sort_by(|a, b| b.1.cmp(&a.1));
-        self.top_contributors.truncate(10);
-
-        env::state_write(self);
+        self.recent_contributions.insert(0, (contributor, amount));
+        self.recent_contributions.truncate(10);
     }
 
     // get top contributors
-    pub fn get_top_contributors(&self) -> Vec<(AccountId, String)> {
-        self.top_contributors
+    pub fn get_recent_contributions(&self) -> Vec<(AccountId, String)> {
+        self.recent_contributions
             .iter()
             .map(|(account_id, amount)| (account_id.clone(), amount.to_string()))
             .collect()
