@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEAR Token Contracts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500&display=swap" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.8.1/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.41.0/dist/near-api-js.min.js"></script>
+    <link rel="icon" href="/assets/near-testnet-faucet-logo.svg" type="image/svg+xml">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1C2RBHN0QP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-1C2RBHN0QP');
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="/assets/near-testnet-faucet-logo.svg" type="image/svg+xml">
+</head>
+
+<body>
+    <header class="gradient py-20">
+        <div class="container flex justify-between mx-auto">
+            <!-- left -->
+            <div>
+                <a href="https://near.org/">
+                    <img src="./assets/near_logo_white.svg" alt="" class="h-24">
+                </a>
+                <h1 class="text-3xl font-bold mt-4">FT Contract List - MAINNET</h1>
+                <p class="bg-gray-800 uppercase text-gray-100 px-2">community curated list - be aware</p>
+            </div>
+            <!-- right -->
+            <div class="text-right">
+                <button class="bg-gray-800 py-3 px-2 text-white ">Last Update: 15/07/2020</button>
+                <p><a href="#" class="hover:underline">suggest edit</a></p>
+            </div>
+
+        </div><br>
+        <br>
+        <br>
+    </header>
+
+    <div class="container mx-auto mt-4" x-data="tokenList">
+        <table class="w-full">
+            <thead class="bg-gray-800 text-white text-left">
+                <tr>
+                    <th class="px-2 py-3">Name</th>
+                    <th>Symbol</th>
+                    <th>Contract</th>
+                    <th>Decimals</th>
+                    <th>Total Supply</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="token in tokens">
+                    <tr class="odd:bg-slate-200 text-lg">
+                        <td class="px-2 py-2">
+                            <span x-text="token.name"></span>
+                        </td>
+                        <td class="font-bold"><span x-text="token.symbol"></span></td>
+                        <td><span x-text="token.contract"></span></td>
+                        <td><span x-text="token.decimals"></span></td>
+                        <td>TS</td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    const tokens = [{
+        "contract": "meta-pool.near",
+        "name": "Staked NEAR",
+        "symbol": "STNEAR",
+        "icon": "",
+        "reference": "https://metapool.app",
+        "decimals": 24
+    },
+    {
+        "contract": "v3.oin_finance.near",
+        "name": "nUSDO",
+        "symbol": "nUSDO",
+        "reference": "",
+        "decimals": 8
+    },
+    {
+        "contract": "pixeltoken.near",
+        "name": "Pixeltoken",
+        "symbol": "PXT",
+        "reference": "",
+        "decimals": 6
+    },
+    {
+        "contract": "dbio.near",
+        "name": "Debio",
+        "symbol": "DBIO",
+        "icon": "",
+        "reference": null,
+        "decimals": 18
+    },
+    {
+        "contract": "token.v2.ref-finance.near",
+        "name": "Ref Finance Token",
+        "symbol": "REF",
+        "reference": null,
+        "decimals": 18
+    }]
+
+    function tokenList() {
+        return { tokens }
+    }
+</script>
