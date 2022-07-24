@@ -86,6 +86,14 @@ impl Contract {
         self.blacklist.insert(&account_id);
     }
 
+    pub fn batch_add_to_blacklist(&mut self, accounts: Vec<AccountId>) {
+        assert_self();
+        // sadly no append TODO: Optimise
+        for account in accounts {
+            self.blacklist.insert(&account);
+        }
+    }
+
     // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
     pub fn remove_from_blacklist(&mut self, account_id: AccountId) {
         assert_self();

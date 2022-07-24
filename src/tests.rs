@@ -82,6 +82,22 @@ fn test_add_to_blacklist() {
     assert!(contract.blacklist.contains(&accounts(1)));
 }
 
+// batch_add_to_blacklist
+#[test]
+fn test_batch_add_to_blacklist() {
+    let mut context = get_context(false);
+    let mut contract = Contract::default();
+
+    testing_env!(context
+        .predecessor_account_id("contract.testnet".parse().unwrap())
+        .build());
+    contract.batch_add_to_blacklist(vec![accounts(0), accounts(1), accounts(2)]);
+
+    assert!(contract.blacklist.contains(&accounts(0)));
+    assert!(contract.blacklist.contains(&accounts(1)));
+    assert!(contract.blacklist.contains(&accounts(2)));
+}
+
 #[test]
 #[should_panic]
 fn test_panics_add_to_blacklist() {
