@@ -25,6 +25,8 @@ trait VaultContract {
 pub struct Contract {
     recent_contributions: Vec<(AccountId, Balance)>,
     recent_receivers: HashMap<AccountId, u64>,
+    // <contract.address.near (TokenName, AmountAvaiable/transfered/, maxAmountAllowed)
+    ft_faucet: HashMap<AccountId, (String, U128, U128)>,
     blacklist: LookupSet<AccountId>,
 }
 
@@ -33,6 +35,7 @@ impl Default for Contract {
         Self {
             recent_contributions: Vec::new(),
             recent_receivers: HashMap::new(),
+            ft_faucet: HashMap::new(),
             blacklist: LookupSet::new(b"s"),
         }
     }
@@ -40,6 +43,7 @@ impl Default for Contract {
 
 #[near_bindgen]
 impl Contract {
+    // TODO maybe make use of the same function dispense both near and FTs
     pub fn request_funds(&mut self, receiver_id: AccountId, amount: U128) {
         // check if predecessor is in the blacklist
         require!(
@@ -79,6 +83,18 @@ impl Contract {
             self.request_additional_liquidity();
         }
     }
+    // TODO
+    // Use this to populate the ft_faucet hashmap, the msg can be used for the max amount that the caller wants go giveaway per request
+    fn ft_on_transfer(&mut self, sender_id: AccountId, amount: U128, msg: String) -> U128 {
+        U128(0)
+    }
+    // TODO
+    // Use this to change the entry in the map, request the ft contract to be the sender to amend the given entry from the hashmap
+    pub fn ft_change_allowance(&mut self) {}
+    // TODO
+    // USE this to make XCC call to the request contract to transfer FT to the user
+    // the faucet should cover storage cost for user on ft contract ???
+    pub fn ft_request_funds(&mut self) {}
 
     // #[private] this macro does not expand for unit testing therefore I'm ignoring it for the time being
     pub fn add_to_blacklist(&mut self, account_id: AccountId) {
