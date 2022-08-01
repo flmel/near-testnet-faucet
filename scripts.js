@@ -82,11 +82,11 @@ function faucet() {
         try {
             await contract.request_funds({
                 receiver_id,
-                amount: nearApi.utils.format.parseNearAmount((10).toString())
+                amount: nearApi.utils.format.parseNearAmount((20).toString())
             }, "50000000000000")
             this.success = {
                 status: true,
-                message: `Success! You have sent 10Ⓝ to ${receiver_id}!`
+                message: `Success! You have sent 20Ⓝ to ${receiver_id}!`
             }
             this.loading = false
         } catch (err) {
