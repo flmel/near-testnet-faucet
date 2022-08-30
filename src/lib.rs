@@ -1,3 +1,4 @@
+use near_contract_standards::fungible_token::metadata::FungibleTokenMetadata;
 use near_sdk::{
     assert_self,
     borsh::{self, BorshDeserialize, BorshSerialize},
@@ -25,6 +26,7 @@ trait VaultContract {
 pub struct Contract {
     recent_contributions: Vec<(AccountId, Balance)>,
     recent_receivers: HashMap<AccountId, u64>,
+    ft_faucet: HashMap<AccountId, (Balance, Balance, FungibleTokenMetadata)>,
     blacklist: LookupSet<AccountId>,
 }
 
@@ -33,6 +35,7 @@ impl Default for Contract {
         Self {
             recent_contributions: Vec::new(),
             recent_receivers: HashMap::new(),
+            ft_faucet: HashMap::new(),
             blacklist: LookupSet::new(b"s"),
         }
     }
