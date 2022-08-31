@@ -1,4 +1,3 @@
-use near_contract_standards::fungible_token::metadata::FungibleTokenMetadata;
 use near_sdk::{
     assert_self,
     borsh::{self, BorshDeserialize, BorshSerialize},
@@ -13,6 +12,7 @@ use std::collections::HashMap;
 pub mod external;
 mod fungible_tokens;
 pub mod settings;
+use crate::fungible_tokens::*;
 
 use crate::settings::*;
 
@@ -26,7 +26,7 @@ trait VaultContract {
 pub struct Contract {
     recent_contributions: Vec<(AccountId, Balance)>,
     recent_receivers: HashMap<AccountId, u64>,
-    ft_faucet: HashMap<AccountId, (Balance, Balance, FungibleTokenMetadata)>,
+    ft_faucet: HashMap<AccountId, FTconfig>,
     blacklist: LookupSet<AccountId>,
 }
 
