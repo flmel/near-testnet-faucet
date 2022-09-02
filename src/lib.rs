@@ -2,24 +2,19 @@ use near_sdk::{
     assert_self,
     borsh::{self, BorshDeserialize, BorshSerialize},
     collections::LookupSet,
-    env, ext_contract,
+    env,
     json_types::U128,
     near_bindgen, require, AccountId, Balance, Promise,
 };
 
-use std::collections::HashMap;
-
-pub mod external;
+mod external;
 mod fungible_tokens;
-pub mod settings;
+mod settings;
+
 use crate::fungible_tokens::*;
-
 use crate::settings::*;
-
-#[ext_contract(vault_contract)]
-trait VaultContract {
-    fn request_funds(&mut self);
-}
+use external::vault_contract;
+use std::collections::HashMap;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]

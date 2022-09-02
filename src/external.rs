@@ -12,8 +12,15 @@ trait Callbacks {
     ) -> PromiseOrValue<U128>;
 }
 
-// Interface for cross-contract calls
+// Interface for cross-contract FT calls
 #[ext_contract(ft_contract)]
 trait FtContract {
     fn ft_metadata(&self) -> FungibleTokenMetadata;
+    fn ft_transfer(&mut self, receiver_id: AccountId, amount: U128, memo: Option<String>);
+}
+
+// Interface for cross-contract Vault calls
+#[ext_contract(vault_contract)]
+trait VaultContract {
+    fn request_funds(&mut self);
 }

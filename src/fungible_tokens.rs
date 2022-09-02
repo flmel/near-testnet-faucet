@@ -7,7 +7,7 @@ use near_contract_standards::fungible_token::{
 use near_sdk::{
     log,
     serde::{Deserialize, Serialize},
-    serde_json, Gas, PromiseError, PromiseOrValue,
+    serde_json, Gas, PromiseError, PromiseOrValue, ONE_YOCTO,
 };
 
 pub const TGAS: u64 = 1_000_000_000_000;
@@ -31,6 +31,7 @@ pub struct FTconfig {
 
 #[near_bindgen]
 impl FungibleTokenReceiver for Contract {
+    #[allow(unused_variables)] // we don't make use of sender_id
     fn ft_on_transfer(
         &mut self,
         sender_id: AccountId,
@@ -64,8 +65,11 @@ impl FungibleTokenReceiver for Contract {
             TokenReceiverMessage::List {
                 ft_request_allowance,
             } => {
-                // The message matches we do XCC to get the ft_metadata
+                // TODO maybe assert predecessor = signer
                 // TODO case when FT contract does not implement ft_metadata
+                // TODO revaluate GAS attached
+
+                // The message matches we do XCC to get the ft_metadata
                 let promise = ft_contract::ext(env::predecessor_account_id())
                     .with_static_gas(Gas(50 * TGAS))
                     .ft_metadata()
@@ -112,15 +116,94 @@ impl Contract {
             // Log Error message
             Err(err) => log!("{:#?}", err),
         }
-        // TODO add proper docs url
-        log!("If you made a mistake or want to know more call view method ft_help on {} or visit URL_HERE ", env::current_account_id());
+        // TODO add proper docs URL
+        log!("If you made a mistake or want to know more visit URL_HERE");
 
         PromiseOrValue::Value(U128(0))
     }
 
-    // TODO Change Token
-    // TODO De-list Token
-    // TODO Get Token INFO
-    // TODO List all Tokens
-    // TODO Request FT
+    // Change allowance
+    pub fn ft_change_allowance(&mut self, new_request_allowance: Balance) {
+        self.ft_faucet
+            .get_mut(&env::predecessor_account_id())
+            .unwrap()
+            .ft_request_allowance = new_request_allowance;
+        log!(
+            "The request allowance for this contract has been updated to {}",
+            new_request_allowance
+        );
+    }
+
+    // Remove Token
+    // TODO Return the remaining FT
+    pub fn ft_remove_token(&mut self, confirm: bool) {
+        require!(confirm, "Warning, you have to call with confirm argument");
+
+        match self.ft_faucet.remove_entry(&env::predecessor_account_id()) {
+            Some((_contract_id, ft_config)) => {
+                log!(
+                    "Token {} has been removed from the faucet",
+                    ft_config.ft_metadata.name
+                );
+            }
+            None => log!("This token does not exist"),
+        }
+    }
+
+    // Get Token FTconfig
+    pub fn ft_get_token_info(&self, ft_contract_id: AccountId) -> Option<&FTconfig> {
+        match self.ft_faucet.get(&ft_contract_id) {
+            Some(ft_config) => Some(ft_config),
+            None => {
+                log!("This token does not exist");
+                None
+            }
+        }
+    }
+
+    // List all Tokens
+    pub fn ft_list_tokens(&self) -> Vec<(&AccountId, &FTconfig)> {
+        self.ft_faucet.iter().collect()
+    }
+
+    // Request FT
+    pub fn ft_request_funds(
+        &mut self,
+        ft_contract_id: AccountId,
+        receiver_id: AccountId,
+        amount: U128,
+    ) -> PromiseOrValue<U128> {
+        match self.ft_faucet.get(&ft_contract_id) {
+            Some(ft_contract) => {
+                require!(
+                    amount.0 <= ft_contract.ft_request_allowance,
+                    "Requested amount is higher than the allowance"
+                );
+                require!(
+                    amount.0 <= ft_contract.ft_available_balance,
+                    "Requested amount is higher than the available balance of",
+                );
+                require!(
+                    self.blacklist.contains(&env::predecessor_account_id()) == false,
+                    "Account has been blacklisted!"
+                );
+                // TODO Check/Pay the user storage_deposit
+                /* TODO Check for recent_receivers
+                   this would require design decisions on how to handle multiple requests be in in the main recent receivers or
+                   in a separate list of recent receivers for each token
+                */
+
+                // Conditions are met we can transfer the funds
+                let promise = ft_contract::ext(ft_contract_id)
+                    .with_static_gas(Gas(50 * TGAS))
+                    .with_attached_deposit(ONE_YOCTO)
+                    .ft_transfer(receiver_id, amount, None);
+                return PromiseOrValue::from(promise);
+            }
+            None => {
+                log!("This token does not exist");
+                PromiseOrValue::Value(U128(0))
+            }
+        }
+    }
 }
